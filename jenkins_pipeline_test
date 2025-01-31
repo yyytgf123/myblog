@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        JAVA_HOME = '/usr/lib/jvm/java-11-openjdk'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/your-repo.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh './gradlew build'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh './gradlew test'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                sh 'scp build/libs/app.jar user@server:/deploy/path/'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Build 성공!'
+        }
+        failure {
+            echo 'Build 실패 ㅠㅠ'
+        }
+    }
+}
